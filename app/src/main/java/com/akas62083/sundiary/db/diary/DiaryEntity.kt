@@ -1,0 +1,26 @@
+package com.akas62083.sundiary.db.diary
+
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "diary_items")
+data class DiaryEntity(
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "diary_id")
+    val id: Long = 0,
+    @ColumnInfo(name = "diary_title")
+    val title: String = "",
+    @ColumnInfo(name = "diary_content")
+    val content: String = "",
+    @ColumnInfo(name = "diary_date")
+    val date: Long,
+    @ColumnInfo(name = "diary_edit")
+    val edit: Boolean = false,
+    @ColumnInfo(name = "diary_image_url")
+    val imageUrl: String = "",
+    @ColumnInfo(name = "diary_is_liked")
+    val isLiked: Boolean = false,
+    @ColumnInfo(name = "diary_tags")
+    val tags: Set<String> = emptySet()
+)
