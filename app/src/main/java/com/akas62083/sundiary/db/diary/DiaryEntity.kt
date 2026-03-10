@@ -14,7 +14,7 @@ data class DiaryEntity(
     @ColumnInfo(name = "diary_content")
     val content: String = "",
     @ColumnInfo(name = "diary_date")
-    val date: Long,
+    val date: Int,
     @ColumnInfo(name = "diary_edit")
     val edit: Boolean = false,
     @ColumnInfo(name = "diary_image_url")

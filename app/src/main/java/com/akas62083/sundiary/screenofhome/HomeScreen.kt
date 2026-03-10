@@ -2,6 +2,7 @@ package com.akas62083.sundiary.screenofhome
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -57,7 +58,8 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(10.dp))
                 Card(
                     modifier = Modifier.height(90.dp) //160
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .clickable { navController.navigate("write") },
                     elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
                 ) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -86,6 +88,7 @@ fun HomeScreen(
             LazyColumn() {
                 items(uiState.diaries, key = { it.id }) {
                     Spacer(modifier = Modifier.height(10.dp))
+                    Text(it.id.toString())
                     ItemCard(
                         diary = it,
                         uiState = uiState

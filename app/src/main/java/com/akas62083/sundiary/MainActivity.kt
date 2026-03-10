@@ -20,6 +20,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.akas62083.sundiary.screenofhome.HomeScreen
 import com.akas62083.sundiary.screenofhome.HomeViewModel
+import com.akas62083.sundiary.screenofwritediary.WriteScreen
+import com.akas62083.sundiary.screenofwritediary.WriteViewModel
 import com.akas62083.sundiary.ui.theme.SunDiaryTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -56,6 +58,13 @@ fun Greeting() {
             HomeScreen(
                 viewModel = viewModel,
                 navController = navController,
+            )
+        }
+        composable("write") { backStackEntry ->
+            val viewModel: WriteViewModel = hiltViewModel()
+            WriteScreen(
+                viewModel = viewModel,
+                navController = navController
             )
         }
     }
