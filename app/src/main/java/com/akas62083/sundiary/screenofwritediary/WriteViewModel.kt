@@ -59,7 +59,10 @@ class WriteViewModel @Inject constructor(
         viewModelScope.launch {
             repository.insertDiary(
                 DiaryEntity(
-                    title = uiState.value.title,
+                    title =
+                        if(uiState.value.selected == Selected.Sunny) "s" + uiState.value.title
+                        else if(uiState.value.selected == Selected.Cloudy) "c" + uiState.value.title
+                        else "r" + uiState.value.title,
                     content = uiState.value.content,
                     date = uiState.value.localDate.toString().replace("-", "").toInt(),
                     edit = false,

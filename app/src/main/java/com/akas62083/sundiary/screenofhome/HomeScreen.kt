@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.akas62083.sundiary.screenofhome.composable.ItemCard
+import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,7 +45,9 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {}
+                title = {
+                    Text(LocalDate.now().toString())
+                }
             )
         },
         bottomBar = {
@@ -87,8 +90,6 @@ fun HomeScreen(
             }
             LazyColumn() {
                 items(uiState.diaries, key = { it.id }) {
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(it.id.toString())
                     ItemCard(
                         diary = it,
                         uiState = uiState

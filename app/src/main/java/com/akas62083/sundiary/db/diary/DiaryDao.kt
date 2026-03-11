@@ -15,7 +15,7 @@ interface DiaryDao {
     suspend fun deleteDiary(diary: DiaryEntity)
     @Update
     suspend fun updateDiary(diary: DiaryEntity)
-    @Query("select * from diary_items order by diary_date desc")
+    @Query("select * from diary_items order by diary_date desc, diary_id desc")
     fun getAllDiary(): Flow<List<DiaryEntity>>
     @Query("select * from diary_items where diary_id = :id")
     fun getDiaryById(id: Long): Flow<DiaryEntity>
