@@ -57,7 +57,13 @@ fun WriteContent(
                     Row {
                         Text(uiState.localDate.toString())
                         Spacer(modifier = Modifier.weight(1f))
-                        Button(onClick = { onEvent(WriteEvent.SaveDiary) }) { Text("保存") }
+                        Button(
+                            onClick = {
+                                onEvent(WriteEvent.SaveDiary)
+                                navController.popBackStack()
+                            },
+                            enabled = uiState.check()
+                        ) { Text("保存") }
                     }
                 }
             )

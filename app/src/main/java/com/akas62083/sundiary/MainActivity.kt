@@ -50,21 +50,21 @@ fun Greeting() {
     val currentBackStack by navController.currentBackStackEntryAsState()
     NavHost(
         navController = navController,
-        startDestination = "home",
+        startDestination = Route.HomeScreen,
         modifier = Modifier.fillMaxSize()
     ) {
-        composable("home") { backStackEntry ->
+        composable<Route.HomeScreen>() { backStackEntry ->
             val viewModel: HomeViewModel = hiltViewModel()
             HomeScreen(
                 viewModel = viewModel,
                 navController = navController,
             )
         }
-        composable("write") { backStackEntry ->
+        composable<Route.WriteScreen>() { backStackEntry ->
             val viewModel: WriteViewModel = hiltViewModel()
             WriteScreen(
                 viewModel = viewModel,
-                navController = navController
+                navController = navController,
             )
         }
     }

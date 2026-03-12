@@ -7,12 +7,22 @@ data class WriteUiState(
     val title: String = "",
     val selected: Selected = Selected.None,
     val content: String = "",
-    val tags: Set<String> = emptySet()
-)
+    val tags: Set<String> = emptySet(),
+    val mode: Mode = Mode.New
+) {
+    val check = {
+        title.isNotEmpty() && content.isNotEmpty() && selected != Selected.None
+    }
+}
 
 enum class Selected {
     Sunny,
     Cloudy,
     Rainy,
     None,
+}
+
+sealed interface Mode{
+    object New: Mode
+    data class Edit(val id: Long): Mode
 }

@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.akas62083.sundiary.Route
 import com.akas62083.sundiary.screenofhome.composable.ItemCard
 import java.time.LocalDate
 
@@ -62,7 +63,7 @@ fun HomeScreen(
                 Card(
                     modifier = Modifier.height(90.dp) //160
                         .fillMaxWidth()
-                        .clickable { navController.navigate("write") },
+                        .clickable { navController.navigate(Route.WriteScreen(id = null)) },
                     elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
                 ) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -92,7 +93,10 @@ fun HomeScreen(
                 items(uiState.diaries, key = { it.id }) {
                     ItemCard(
                         diary = it,
-                        uiState = uiState
+                        uiState = uiState,
+                        editClick = { id ->
+                            navController.navigate(Route.WriteScreen(id = id))
+                        }
                     )
                 }
             }

@@ -17,6 +17,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,107 +32,119 @@ import java.time.LocalDate
 @Composable
 fun ItemCard(
     diary: DiaryEntity,
-    uiState: HomeUiState
+    uiState: HomeUiState,
+    editClick: (Long) -> Unit
 ) {
-    Card(
-        modifier = Modifier.fillMaxWidth()
-            .padding(vertical = 10.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
-    ) {
-        val year = diary.date / 10000
-        val month = diary.date % 10000 / 100
-        val day = diary.date % 100
-        Row(
-            modifier = Modifier.padding(10.dp).fillMaxWidth().height(IntrinsicSize.Min),
-            verticalAlignment = Alignment.CenterVertically,
-            //horizontalArrangement = Arrangement.SpaceBetween
+    Column {
+        Card(
+            modifier = Modifier.fillMaxWidth()
+                .padding(vertical = 10.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 7.dp)
         ) {
+            val year = diary.date / 10000
+            val month = diary.date % 10000 / 100
+            val day = diary.date % 100
             Row(
-                modifier = Modifier.weight(1.5f).fillMaxSize(),
+                modifier = Modifier.padding(10.dp).fillMaxWidth().height(IntrinsicSize.Min),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                //horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = year.toString(),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        text = month.toString(),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        text = day.toString(),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                Row(
+                    modifier = Modifier.weight(1.5f).fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = year.toString(),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = month.toString(),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = day.toString(),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = "年",
+                        )
+                        Text(
+                            text = "月",
+                        )
+                        Text(
+                            text = "日",
+                        )
+                    }
+                }
+                Row(
+                    modifier = Modifier.weight(1.5f).fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Icon(
+                        modifier = Modifier.padding(10.dp).fillMaxHeight().aspectRatio(1f),
+                        painter = painterResource(
+                            if (diary.title[0] == 's') R.drawable.sunny
+                            else if (diary.title[0] == 'c') R.drawable.sun_and_cloud
+                            else R.drawable.cloudy
+                        ),
+                        contentDescription = "tenki"
                     )
                 }
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Row(modifier = Modifier.weight(5f).fillMaxSize()) {
+                    Column {
+                        Text(
+                            modifier = Modifier.weight(1f).fillMaxSize(),
+                            text = "「${diary.title.substring(1, diary.title.length)}」",
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            modifier = Modifier.weight(2f),
+                            text = diary.content,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+                Column(modifier = Modifier.weight(2f).fillMaxSize()) {
                     Text(
-                        text = "年",
+                        modifier = Modifier.weight(1f),
+                        text = "id: ${(diary.id).toString()}",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = "月",
+                        modifier = Modifier.weight(1f),
+                        text = if (diary.edit) "編集済" else if (diary.date == LocalDate.now()
+                                .toString().replace("-", "").toInt()
+                        ) "編集可" else "未編集",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
-                    Text(
-                        text = "日",
+                    Icon(
+                        modifier = Modifier.weight(1f),
+                        imageVector = Icons.Default.Star,
+                        contentDescription = "liked"
                     )
                 }
             }
-            Row(
-                modifier = Modifier.weight(1.5f).fillMaxSize(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                Icon(
-                    modifier = Modifier.padding(10.dp).fillMaxHeight().aspectRatio(1f),
-                    painter = painterResource(
-                        if (diary.content[0] == 's') R.drawable.sunny
-                        else if (diary.content[0] == 'c') R.drawable.sun_and_cloud
-                        else R.drawable.cloudy
-                    ),
-                    contentDescription = "tenki"
-                )
-            }
-            Row(modifier = Modifier.weight(5f).fillMaxSize()) {
-                Column {
-                    Text(
-                        modifier = Modifier.weight(1f).fillMaxSize(),
-                        text = "「${diary.title.substring(1, diary.title.length)}」",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                    Text(
-                        modifier = Modifier.weight(2f),
-                        text = diary.content,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
+
+        }
+        if(diary.date == LocalDate.now().toString().replace("-", "").toInt() && !diary.edit) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                TextButton(onClick = { editClick(diary.id) }) {
+                    Text("編集する")
                 }
-            }
-            Column(modifier = Modifier.weight(2f).fillMaxSize()) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = "id: ${(diary.id).toString()}",
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = if(diary.edit) "編集済" else if(diary.date == LocalDate.now().toString().replace("-", "").toInt()) "編集可" else "未編集",
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Icon(
-                    modifier = Modifier.weight(1f),
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "liked"
-                )
             }
         }
-
     }
 }
