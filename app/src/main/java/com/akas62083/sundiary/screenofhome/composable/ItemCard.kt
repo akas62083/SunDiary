@@ -1,5 +1,6 @@
 package com.akas62083.sundiary.screenofhome.composable
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -21,6 +22,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -33,12 +35,17 @@ import java.time.LocalDate
 fun ItemCard(
     diary: DiaryEntity,
     uiState: HomeUiState,
-    editClick: (Long) -> Unit
+    isLikeClick: (Long) -> Unit,
+    editClick: (Long) -> Unit,
+    diaryClick: (Long) -> Unit
 ) {
     Column {
         Card(
             modifier = Modifier.fillMaxWidth()
-                .padding(vertical = 10.dp),
+                .padding(vertical = 10.dp)
+                .clickable(){
+                    diaryClick(diary.id)
+                },
             elevation = CardDefaults.cardElevation(defaultElevation = 7.dp)
         ) {
             val year = diary.date / 10000
@@ -131,9 +138,14 @@ fun ItemCard(
                         overflow = TextOverflow.Ellipsis
                     )
                     Icon(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f)
+                            .clickable(
+                                interactionSource = null,
+                                indication = null
+                            ) { isLikeClick(diary.id) },
                         imageVector = Icons.Default.Star,
-                        contentDescription = "liked"
+                        tint = if(diary.isLiked) Color.Black else Color.LightGray,
+                        contentDescription = "liked",
                     )
                 }
             }

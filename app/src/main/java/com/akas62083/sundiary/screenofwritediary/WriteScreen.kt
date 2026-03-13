@@ -2,6 +2,7 @@ package com.akas62083.sundiary.screenofwritediary
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -102,8 +103,8 @@ fun WriteContent(
                         Text("今日の地球")
                         Spacer(modifier = Modifier.height(5.dp))
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             SelectScreen(
                                 select = Selected.Sunny,

@@ -64,7 +64,8 @@ fun SelectScreen(
                 modifier = Modifier.background(
                     color = if(uiState.selected == select) MaterialTheme.colorScheme.primaryContainer
                     else Color.Transparent
-                )
+                ),
+                maxLines = 1
             )
         }
     }

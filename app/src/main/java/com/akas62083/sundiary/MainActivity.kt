@@ -18,6 +18,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.akas62083.sundiary.screenofdetail.DetailScreen
+import com.akas62083.sundiary.screenofdetail.DetailViewModel
 import com.akas62083.sundiary.screenofhome.HomeScreen
 import com.akas62083.sundiary.screenofhome.HomeViewModel
 import com.akas62083.sundiary.screenofwritediary.WriteScreen
@@ -65,6 +67,13 @@ fun Greeting() {
             WriteScreen(
                 viewModel = viewModel,
                 navController = navController,
+            )
+        }
+        composable<Route.DetailScreen>() { backStackEntry ->
+            val viweModel: DetailViewModel = hiltViewModel()
+            DetailScreen(
+                viewModel = viweModel,
+                navController = navController
             )
         }
     }

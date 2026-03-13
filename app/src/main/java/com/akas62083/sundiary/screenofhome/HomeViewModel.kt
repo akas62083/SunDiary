@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -27,7 +28,6 @@ class HomeViewModel @Inject constructor(
     init {
         observeDiaries()
     }
-
     private fun observeDiaries() {
         viewModelScope.launch {
             repository.getAllDiary().collect { entries ->
@@ -46,6 +46,25 @@ class HomeViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+    fun onEvent(event: HomeEvent) {
+        when(event) {
+            is HomeEvent.IsLikeClick -> {
+                isLikeClick(event.id)
+            }
+        }
+    }
+
+    fun isLikeClick(id: Long) {
+        viewModelScope.launch {
+            val diary = repository.getDiaryById(id).first()
+            repository.updateDiary(
+                diary.copy(
+                    isLiked = !diary.isLiked
+                )
+            )
         }
     }
 }

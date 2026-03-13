@@ -1,6 +1,5 @@
 package com.akas62083.sundiary.screenofhome
 
 sealed interface HomeEvent {
-    object InsertDiaryButton: HomeEvent
-
+    data class IsLikeClick(val id: Long): HomeEvent
 }

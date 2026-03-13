@@ -94,8 +94,14 @@ fun HomeScreen(
                     ItemCard(
                         diary = it,
                         uiState = uiState,
+                        isLikeClick = { id ->
+                            viewModel.onEvent(HomeEvent.IsLikeClick(id))
+                        },
                         editClick = { id ->
                             navController.navigate(Route.WriteScreen(id = id))
+                        },
+                        diaryClick = { id ->
+                            navController.navigate(Route.DetailScreen(id = id))
                         }
                     )
                 }
