@@ -58,6 +58,7 @@ fun HomeScreen(
                             modifier = Modifier.clickable { navController.navigate(Route.StarScreen) },
                             tint = Color(0xffa6201a)
                         )
+                        Spacer(modifier = Modifier.width(20.dp))
                     }
                 }
             )

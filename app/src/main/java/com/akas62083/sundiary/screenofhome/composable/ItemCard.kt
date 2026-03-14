@@ -103,7 +103,7 @@ fun ItemCard(
                             else R.drawable.cloudy
                         ),
                         contentDescription = "tenki",
-                        tint = Color.Red
+                        tint = Color(0xffa6201a)
                     )
                 }
                 Row(modifier = Modifier.weight(5f).fillMaxSize()) {
