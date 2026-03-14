@@ -22,6 +22,8 @@ import com.akas62083.sundiary.screenofdetail.DetailScreen
 import com.akas62083.sundiary.screenofdetail.DetailViewModel
 import com.akas62083.sundiary.screenofhome.HomeScreen
 import com.akas62083.sundiary.screenofhome.HomeViewModel
+import com.akas62083.sundiary.screenofstar.StarScreen
+import com.akas62083.sundiary.screenofstar.StarViewModel
 import com.akas62083.sundiary.screenofwritediary.WriteScreen
 import com.akas62083.sundiary.screenofwritediary.WriteViewModel
 import com.akas62083.sundiary.ui.theme.SunDiaryTheme
@@ -73,6 +75,13 @@ fun Greeting() {
             val viweModel: DetailViewModel = hiltViewModel()
             DetailScreen(
                 viewModel = viweModel,
+                navController = navController
+            )
+        }
+        composable<Route.StarScreen>() {
+            val viewModel: StarViewModel = hiltViewModel()
+            StarScreen(
+                viewModel = viewModel,
                 navController = navController
             )
         }

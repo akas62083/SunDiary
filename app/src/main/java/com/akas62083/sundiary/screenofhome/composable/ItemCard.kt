@@ -102,7 +102,8 @@ fun ItemCard(
                             else if (diary.title[0] == 'c') R.drawable.sun_and_cloud
                             else R.drawable.cloudy
                         ),
-                        contentDescription = "tenki"
+                        contentDescription = "tenki",
+                        tint = Color.Red
                     )
                 }
                 Row(modifier = Modifier.weight(5f).fillMaxSize()) {

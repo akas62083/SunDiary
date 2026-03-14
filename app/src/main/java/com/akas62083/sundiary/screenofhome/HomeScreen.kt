@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -47,7 +49,16 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(LocalDate.now().toString())
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Text(LocalDate.now().toString())
+                        Spacer(modifier = Modifier.weight(1f))
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "star",
+                            modifier = Modifier.clickable { navController.navigate(Route.StarScreen) },
+                            tint = Color(0xffa6201a)
+                        )
+                    }
                 }
             )
         },

@@ -15,4 +15,7 @@ object Route {
     data class DetailScreen(
         val id: Long
     )
+
+    @Serializable
+    data object StarScreen
 }
