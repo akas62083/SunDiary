@@ -3,8 +3,10 @@ package com.akas62083.sundiary.screenofhome
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,20 +15,34 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,8 +51,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.akas62083.sundiary.Route
 import com.akas62083.sundiary.screenofhome.composable.ItemCard
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
+data class IndexClass(
+    val index: Int,
+    val date: Int
+)
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,77 +66,155 @@ fun HomeScreen(
     navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text(LocalDate.now().toString())
-                        Spacer(modifier = Modifier.weight(1f))
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = "star",
-                            modifier = Modifier.clickable { navController.navigate(Route.StarScreen) },
-                            tint = Color(0xffa6201a)
-                        )
-                        Spacer(modifier = Modifier.width(20.dp))
-                    }
-                }
-            )
-        },
-        bottomBar = {
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
+    val indexList = remember(uiState.diaries) {
+        val list = mutableListOf<IndexClass>()
+        uiState.diaries.forEachIndexed { index, diary ->
+            val currentYM = diary.date / 100
+            val prevYM = if(index > 0) uiState.diaries[index - 1].date / 100 else -1
+            if(currentYM != prevYM) {
+                list.add(IndexClass(date = currentYM, index = index))
+            }
         }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier.padding(innerPadding)
-                .padding(horizontal = 10.dp)
-        ) {
-            if(!uiState.isWroteDiaryToday) {
-                Spacer(modifier = Modifier.height(10.dp))
-                Card(
-                    modifier = Modifier.height(90.dp) //160
-                        .fillMaxWidth()
-                        .clickable { navController.navigate(Route.WriteScreen(id = null)) },
-                    elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+        list
+    }
+    ModalNavigationDrawer(
+        drawerContent = {
+            ModalDrawerSheet {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Row {
-                            Spacer(modifier = Modifier.width(30.dp))
-                            Box(modifier = Modifier.weight(1f).padding(7.dp)) {
-                                Icon(
-                                    modifier = Modifier.fillMaxSize(),
-                                    imageVector = Icons.Default.Edit,
-                                    contentDescription = "sun_mark"
-                                )
-                            }
-                            Box(modifier = Modifier.weight(7f).fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Text("今日の気分は？")
-                            }
-                            Icon(
-                                modifier = Modifier.weight(1f).fillMaxSize(),
-                                imageVector = Icons.Default.ArrowRight,
-                                contentDescription = "right_arrow"
-                            )
-                            Spacer(modifier = Modifier.width(30.dp))
-                        }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text("総日記", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleLarge)
+                    HorizontalDivider()
+                    indexList.forEach {
+                        NavigationDrawerItem(
+                            label = { Text(it.date.toString().substring(0, 4) + "年" + it.date.toString().substring(4, 6) + "月") },
+                            onClick = {
+                                scope.launch {
+                                    listState.animateScrollToItem(it.index)
+                                    drawerState.close()
+                                }
+                            },
+                            selected = false
+                        )
                     }
                 }
             }
-            LazyColumn() {
-                items(uiState.diaries, key = { it.id }) {
-                    ItemCard(
-                        diary = it,
-                        uiState = uiState,
-                        isLikeClick = { id ->
-                            viewModel.onEvent(HomeEvent.IsLikeClick(id))
-                        },
-                        editClick = { id ->
-                            navController.navigate(Route.WriteScreen(id = id))
-                        },
-                        diaryClick = { id ->
-                            navController.navigate(Route.DetailScreen(id = id))
+        },
+        drawerState = drawerState
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+                            Icon(
+                                imageVector = Icons.Default.Menu,
+                                contentDescription = null,
+                                modifier = Modifier.clickable {
+                                    scope.launch {
+                                        if (drawerState.isClosed) drawerState.open()
+                                        else drawerState.close()
+                                    }
+                                },
+                            )
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(LocalDate.now().toString())
+                            Spacer(modifier = Modifier.width(5.dp))
+                            VerticalDivider()
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text("総日記数：" + uiState.diaries.size.toString())
+                            Spacer(modifier = Modifier.weight(1f))
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = "star",
+                                modifier = Modifier.clickable { navController.navigate(Route.StarScreen) },
+                                tint = Color(0xffa6201a)
+                            )
+                            Spacer(modifier = Modifier.width(20.dp))
                         }
-                    )
+                    }
+                )
+            },
+            bottomBar = {
+            }
+        ) { innerPadding ->
+            Column(
+                modifier = Modifier.padding(innerPadding)
+                    .padding(horizontal = 10.dp)
+            ) {
+                if (!uiState.isWroteDiaryToday) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Card(
+                        modifier = Modifier.height(90.dp) //160
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp)
+                            .clickable { navController.navigate(Route.WriteScreen(id = null)) },
+                        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Row {
+                                Spacer(modifier = Modifier.width(30.dp))
+                                Box(modifier = Modifier.weight(1f).padding(7.dp)) {
+                                    Icon(
+                                        modifier = Modifier.fillMaxSize(),
+                                        imageVector = Icons.Default.Edit,
+                                        contentDescription = "sun_mark"
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier.weight(7f).fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text("今日の気分は？")
+                                }
+                                Icon(
+                                    modifier = Modifier.weight(1f).fillMaxSize(),
+                                    imageVector = Icons.Default.ArrowRight,
+                                    contentDescription = "right_arrow"
+                                )
+                                Spacer(modifier = Modifier.width(30.dp))
+                            }
+                        }
+                    }
+                }
+                LazyColumn(state = listState) {
+                    itemsIndexed(uiState.diaries, key = { _, it -> it.id }) { index, it ->
+                        val currentYM = it.date / 100
+                        val prevYM = if (index > 0) uiState.diaries[index - 1].date / 100 else -1
+
+                        if (currentYM != prevYM) {
+                            HorizontalDivider()
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center,
+                            ) {
+                                val dateStr = it.date.toString()
+                                Text("${dateStr.substring(0, 4)}年${dateStr.substring(4, 6)}月")
+                            }
+                        }
+                        ItemCard(
+                            diary = it,
+                            uiState = uiState,
+                            isLikeClick = { id ->
+                                viewModel.onEvent(HomeEvent.IsLikeClick(id))
+                            },
+                            editClick = { id ->
+                                navController.navigate(Route.WriteScreen(id = id))
+                            },
+                            diaryClick = { id ->
+                                navController.navigate(Route.DetailScreen(id = id))
+                            }
+                        )
+                    }
                 }
             }
         }

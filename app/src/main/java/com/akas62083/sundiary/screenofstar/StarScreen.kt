@@ -5,16 +5,20 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,8 +45,16 @@ fun StarScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.height(0.00001.dp),
+                colors = topAppBarColors(
+                    containerColor = Color(0xff070a38),
+                ),
                 title = {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "arrowback",
+                        tint = Color.LightGray,
+                        modifier = Modifier.clickable{navController.popBackStack()}
+                    )
                 }
             )
         },
