@@ -72,13 +72,13 @@ fun Greeting() {
             )
         }
         composable<Route.DetailScreen>() { backStackEntry ->
-            val viweModel: DetailViewModel = hiltViewModel()
+            val viewModel: DetailViewModel = hiltViewModel()
             DetailScreen(
-                viewModel = viweModel,
+                viewModel = viewModel,
                 navController = navController
             )
         }
-        composable<Route.StarScreen>() {
+        composable<Route.StarScreen>() { backStackEntry ->
             val viewModel: StarViewModel = hiltViewModel()
             StarScreen(
                 viewModel = viewModel,

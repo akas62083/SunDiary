@@ -8,7 +8,7 @@ import com.akas62083.sundiary.db.diary.DiaryEntity
 
 @Database(
     entities = [DiaryEntity::class],
-    version = 2,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converter::class)

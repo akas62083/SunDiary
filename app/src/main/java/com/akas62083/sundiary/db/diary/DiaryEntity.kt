@@ -3,6 +3,7 @@ package com.akas62083.sundiary.db.diary
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.akas62083.sundiary.screenofwritediary.Wether
 
 @Entity(tableName = "diary_items")
 data class DiaryEntity(
@@ -21,6 +22,6 @@ data class DiaryEntity(
     val imageUrl: String = "",
     @ColumnInfo(name = "diary_is_liked")
     val isLiked: Boolean = false,
-    @ColumnInfo(name = "diary_tags")
-    val tags: Set<String> = emptySet()
+    @ColumnInfo(name = "diary_wether")
+    val wether: Wether = Wether.None //SelectedはWriteフォルダで定義。
 )

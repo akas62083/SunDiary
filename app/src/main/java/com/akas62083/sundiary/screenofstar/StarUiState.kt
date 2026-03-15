@@ -8,6 +8,7 @@ data class StarUiState(
     val offsetList: List<StarOffset> = emptyList(),
     val maxHeight: Dp? = null,
     val maxWidth: Dp? = null,
+    val refresh: Boolean = false
 )
 
 data class StarOffset(

@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.akas62083.sundiary.DiaryRepository
+import com.akas62083.sundiary.Repository
 import com.akas62083.sundiary.Route
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    repository: DiaryRepository,
+    repository: Repository,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
     val diaryId = savedStateHandle.toRoute<Route.DetailScreen>().id
@@ -34,7 +34,4 @@ class DetailViewModel @Inject constructor(
             }
         }
     }
-
-
-
 }

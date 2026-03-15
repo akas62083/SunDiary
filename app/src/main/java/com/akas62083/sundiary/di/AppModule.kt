@@ -2,7 +2,6 @@ package com.akas62083.sundiary.di
 
 import android.content.Context
 import androidx.room.Room
-import com.akas62083.sundiary.DiaryRepository
 import com.akas62083.sundiary.db.AppDatabase
 import com.akas62083.sundiary.db.diary.DiaryDao
 import dagger.Module
@@ -26,9 +25,6 @@ object AppModule {
 
     @Provides
     fun provideDiaryDao(databse: AppDatabase): DiaryDao = databse.getDiaryDao()
-    @Provides
-    @Singleton
-    fun provideDiaryRepository(dao: DiaryDao): DiaryRepository = DiaryRepository(dao)
 
 
 }

@@ -17,13 +17,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.akas62083.sundiary.R
-import com.akas62083.sundiary.screenofwritediary.Selected
+import com.akas62083.sundiary.screenofwritediary.Wether
 import com.akas62083.sundiary.screenofwritediary.WriteEvent
 import com.akas62083.sundiary.screenofwritediary.WriteUiState
 
 @Composable
 fun SelectScreen(
-    select: Selected,
+    select: Wether,
     onEvent: (WriteEvent) -> Unit,
     uiState: WriteUiState
 ) {
@@ -53,14 +53,14 @@ fun SelectScreen(
                     else Color.Transparent
                 ),
                 painter = painterResource(
-                    if(select == Selected.Cloudy) R.drawable.sun_and_cloud
-                    else if(select == Selected.Sunny) R.drawable.sunny
+                    if(select == Wether.Cloudy) R.drawable.sun_and_cloud
+                    else if(select == Wether.Sunny) R.drawable.sunny
                     else R.drawable.cloudy
                 ),
                 contentDescription = select.toString()
             )
             Text(
-                text = if(select == Selected.Sunny) "良く見えた" else if(select == Selected.Cloudy) "雲が邪魔だった" else "見えなかった",
+                text = if(select == Wether.Sunny) "良く見えた" else if(select == Wether.Cloudy) "雲が邪魔だった" else "見えなかった",
                 modifier = Modifier.background(
                     color = if(uiState.selected == select) MaterialTheme.colorScheme.primaryContainer
                     else Color.Transparent

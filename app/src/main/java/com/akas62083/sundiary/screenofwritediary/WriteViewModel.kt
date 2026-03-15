@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.akas62083.sundiary.DiaryRepository
+import com.akas62083.sundiary.Repository
 import com.akas62083.sundiary.Route
 import com.akas62083.sundiary.db.diary.DiaryEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WriteViewModel @Inject constructor(
-    val repository: DiaryRepository,
+    val repository: Repository,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
     private val args = savedStateHandle.toRoute<Route.WriteScreen>()
@@ -37,21 +37,12 @@ class WriteViewModel @Inject constructor(
                 repository.getDiaryById(diaryId).collect {
                     _uiState.update { currentState ->
                         currentState.copy(
-                            title = it.title.substring(1, it.title.length),
+                            title = it.title,
                             content = it.content,
-                            selected = if(it.title[0] == 's') Selected.Sunny
-                                else if(it.title[0] == 'c') Selected.Cloudy
-                                else Selected.Rainy
-                            )
+                            selected = it.wether
+                        )
                     }
                 }
-            }
-            val tags = emptySet<String>()
-            repository.getAllDiary().collect { entries ->
-                tags + entries.flatMap { it.tags }
-            }
-            _uiState.update { currentState ->
-                currentState.copy(tags = tags)
             }
         }
     }
@@ -61,6 +52,7 @@ class WriteViewModel @Inject constructor(
             is WriteEvent.UpdateSelected -> { selected(event.value)}
             is WriteEvent.UpdateContent -> { updateContent(event.value) }
             is WriteEvent.SaveDiary -> { saveDiary() }
+            is WriteEvent.OnImageSelected -> { onImageSelected(event.value) }
         }
     }
 
@@ -69,7 +61,7 @@ class WriteViewModel @Inject constructor(
             currentState.copy(title = value)
         }
     }
-    fun selected(value: Selected) {
+    fun selected(value: Wether) {
         _uiState.update { currentState ->
             currentState.copy(selected = value)
         }
@@ -84,40 +76,35 @@ class WriteViewModel @Inject constructor(
             viewModelScope.launch {
                 repository.insertDiary(
                     DiaryEntity(
-                        title =
-                            if (uiState.value.selected == Selected.Sunny) "s" + uiState.value.title
-                            else if (uiState.value.selected == Selected.Cloudy) "c" + uiState.value.title
-                            else "r" + uiState.value.title,
+                        title = uiState.value.title,
                         content = uiState.value.content,
                         date = uiState.value.localDate.toString().replace("-", "").toInt(),
                         edit = false,
                         imageUrl = "",
                         isLiked = false,
-                        tags = emptySet(),
-
-                        )
+                        wether = uiState.value.selected
+                    )
                 )
             }
         } else {
             viewModelScope.launch {
                 repository.updateDiary(
                     DiaryEntity(
-                        title =
-                            if (uiState.value.selected == Selected.Sunny) "s" + uiState.value.title
-                            else if (uiState.value.selected == Selected.Cloudy) "c" + uiState.value.title
-                            else "r" + uiState.value.title,
+                        title = uiState.value.title,
                         content = uiState.value.content,
                         date = uiState.value.localDate.toString().replace("-", "").toInt(),
-                        imageUrl = "",
+                        imageUrl = uiState.value.imageUrl ?: "",
                         edit = true,
-                        tags = emptySet(),
-                        id = diaryId
+                        id = diaryId,
+                        wether = uiState.value.selected
                     )
                 )
             }
         }
     }
+    fun onImageSelected(value: String) {
+        _uiState.update { currentState ->
+            currentState.copy(imageUrl = value)
+        }
+    }
 }
-
-// adb tcpip 5555
-// adb connect ip:5555

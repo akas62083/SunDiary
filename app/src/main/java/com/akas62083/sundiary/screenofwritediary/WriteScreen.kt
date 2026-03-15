@@ -1,6 +1,9 @@
 package com.akas62083.sundiary.screenofwritediary
 
 import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -51,6 +54,13 @@ fun WriteContent(
     navController: NavController,
     onEvent: (WriteEvent) -> Unit
 ) {
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+    ) { uri ->
+        uri?.let {
+            onEvent(WriteEvent.OnImageSelected(it.toString()))
+        }
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -107,17 +117,17 @@ fun WriteContent(
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
                             SelectScreen(
-                                select = Selected.Sunny,
+                                select = Wether.Sunny,
                                 onEvent = onEvent,
                                 uiState = uiState
                             )
                             SelectScreen(
-                                select = Selected.Cloudy,
+                                select = Wether.Cloudy,
                                 onEvent = onEvent,
                                 uiState = uiState
                             )
                             SelectScreen(
-                                select = Selected.Rainy,
+                                select = Wether.Rainy,
                                 onEvent = onEvent,
                                 uiState = uiState
                             )
@@ -139,25 +149,18 @@ fun WriteContent(
                         )
                     }
                 }
-                Card(
-                    modifier = Modifier
-                        .padding(vertical = 10.dp)
-                        .fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
-                ) {
-                    Column(modifier = Modifier.padding(10.dp)) {
-                        Text("タグ")
-                        Row {
-                            uiState.tags.forEach {
-                                Text(
-                                    text = it,
-                                    modifier = Modifier.padding(horizontal = 5.dp)
-                                )
-                            }
+                Spacer(modifier = Modifier.padding(vertical = 10.dp))
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center ) {
+                    Button(
+                        onClick = {
+                            launcher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
                         }
+                    ) {
+                        Text("写真")
                     }
                 }
-                Spacer(modifier = Modifier.padding(vertical = 10.dp))
             }
         }
     }

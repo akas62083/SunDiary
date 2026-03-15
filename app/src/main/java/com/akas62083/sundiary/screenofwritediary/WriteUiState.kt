@@ -5,17 +5,17 @@ import java.time.LocalDate
 data class WriteUiState(
     val localDate: LocalDate,
     val title: String = "",
-    val selected: Selected = Selected.None,
+    val selected: Wether = Wether.None,
     val content: String = "",
-    val tags: Set<String> = emptySet(),
-    val mode: Mode = Mode.New
+    val mode: Mode = Mode.New,
+    val imageUrl: String? = null
 ) {
     val check = {
-        title.isNotEmpty() && content.isNotEmpty() && selected != Selected.None
+        title.isNotEmpty() && content.isNotEmpty() && selected != Wether.None
     }
 }
 
-enum class Selected {
+enum class Wether {
     Sunny,
     Cloudy,
     Rainy,

@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,11 +45,17 @@ fun DetailScreen(
                 ) {
                     Text(
                         text = if(uiState.diary.title == "") "タイトルが取得できませんでした。"
-                            else uiState.diary.title.substring(1, uiState.diary.title.length),
+                            else uiState.diary.title,
                         modifier = Modifier.padding(bottom = 10.dp),
                         style = MaterialTheme.typography.titleLarge)
                 }
                 HorizontalDivider()
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                    AsyncImage(
+                        model = uiState.diary.imageUrl,
+                        contentDescription = "image",
+                    )
+                }
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     Text(
                         text = if(uiState.diary.id.toInt() != -1) {uiState.diary.date.toString().substring(0, 4) + "-" + uiState.diary.date.toString().substring(4, 6) + "-" + uiState.diary.date.toString().substring(6, 8) }

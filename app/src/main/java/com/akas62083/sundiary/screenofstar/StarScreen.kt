@@ -4,15 +4,21 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -49,12 +55,23 @@ fun StarScreen(
                     containerColor = Color(0xff070a38),
                 ),
                 title = {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "arrowback",
-                        tint = Color.LightGray,
-                        modifier = Modifier.clickable{navController.popBackStack()}
-                    )
+                    Row {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "arrowback",
+                            tint = Color.LightGray,
+                            modifier = Modifier.clickable { navController.popBackStack() }
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = "refresh",
+                            tint = Color.LightGray,
+                            modifier = Modifier.clickable{ viewModel.onEvent(StarEvent.Refresh) }
+                                .size(40.dp)
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                    }
                 }
             )
         },
@@ -64,12 +81,16 @@ fun StarScreen(
             ){}
         }
     ) { innerPadding ->
-        BoxWithConstraints(modifier = Modifier.padding(innerPadding).fillMaxSize().background(Color(0xff070A38))) {
+        BoxWithConstraints(
+            modifier = Modifier.padding(innerPadding)
+                .fillMaxSize()
+                .background(Color(0xff070A38))
+        ) {
             LaunchedEffect(maxHeight, maxWidth) {
                 viewModel.onEvent(StarEvent.ChengeMaxHeight(maxHeight, maxWidth))
             }
             uiState.offsetList.forEachIndexed { index, it ->
-                var isVisible by remember(it) {mutableStateOf(false)}
+                var isVisible by remember(it) { mutableStateOf(false) }
                 LaunchedEffect(it) {
                     delay(index * 100L)
                     isVisible = true
@@ -77,6 +98,7 @@ fun StarScreen(
                 AnimatedVisibility(
                     visible = isVisible,
                     enter = fadeIn(animationSpec = tween(500)),
+                    exit = fadeOut(),
                     modifier = Modifier.offset(it.x, it.y)
                 ) {
                     Icon(
@@ -91,13 +113,13 @@ fun StarScreen(
                         ),
                         contentDescription = "star",
                         tint = when (it.color) {
-                                1 -> Color(0xffffff33)
-                                2 -> Color(0xffffd700)
-                                3 -> Color(0xffffc107)
-                                4 -> Color(0xfffff176)
-                                5 -> Color(0xffe6c200)
-                                else -> Color(0xffa6201a)
-                            }
+                            1 -> Color(0xffffff33)
+                            2 -> Color(0xffffd700)
+                            3 -> Color(0xffffc107)
+                            4 -> Color(0xfffff176)
+                            5 -> Color(0xffe6c200)
+                            else -> Color(0xffa6201a)
+                        }
                     )
                 }
             }

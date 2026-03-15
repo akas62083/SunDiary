@@ -24,11 +24,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.akas62083.sundiary.R
 import com.akas62083.sundiary.db.diary.DiaryEntity
 import com.akas62083.sundiary.screenofhome.HomeUiState
+import com.akas62083.sundiary.screenofwritediary.Wether
 import java.time.LocalDate
 
 @Composable
@@ -54,7 +56,6 @@ fun ItemCard(
             Row(
                 modifier = Modifier.padding(10.dp).fillMaxWidth().height(IntrinsicSize.Min),
                 verticalAlignment = Alignment.CenterVertically,
-                //horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(
                     modifier = Modifier.weight(1.5f).fillMaxSize(),
@@ -98,9 +99,11 @@ fun ItemCard(
                     Icon(
                         modifier = Modifier.padding(10.dp).fillMaxHeight().aspectRatio(1f),
                         painter = painterResource(
-                            if (diary.title[0] == 's') R.drawable.sunny
-                            else if (diary.title[0] == 'c') R.drawable.sun_and_cloud
-                            else R.drawable.cloudy
+                            when(diary.wether) {
+                                Wether.Sunny -> R.drawable.sunny
+                                Wether.Cloudy -> R.drawable.sun_and_cloud
+                                else -> R.drawable.cloudy
+                            }
                         ),
                         contentDescription = "tenki",
                         tint = Color(0xffa6201a)
@@ -110,10 +113,11 @@ fun ItemCard(
                     Column {
                         Text(
                             modifier = Modifier.weight(1f).fillMaxSize(),
-                            text = "「${diary.title.substring(1, diary.title.length)}」",
+                            text = "「${diary.title}」",
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.titleMedium
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
                         )
                         Text(
                             modifier = Modifier.weight(2f),
@@ -126,7 +130,7 @@ fun ItemCard(
                 Column(modifier = Modifier.weight(2f).fillMaxSize()) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = "id: ${(diary.id).toString()}",
+                        text = "id: ${(diary.id)}",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
