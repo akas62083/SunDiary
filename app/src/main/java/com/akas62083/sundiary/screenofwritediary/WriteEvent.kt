@@ -6,4 +6,7 @@ sealed interface WriteEvent {
     data class UpdateContent(val value: String): WriteEvent
     data object SaveDiary: WriteEvent
     data class OnImageSelected(val value: String): WriteEvent
+    data object TakeAPicture: WriteEvent
+    data object DoneTakeAPicture: WriteEvent
+    data object DelateImage: WriteEvent
 }

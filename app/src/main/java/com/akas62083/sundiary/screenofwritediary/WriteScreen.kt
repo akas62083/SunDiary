@@ -5,31 +5,40 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.akas62083.sundiary.screenofwritediary.component.SelectScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -59,6 +68,13 @@ fun WriteContent(
     ) { uri ->
         uri?.let {
             onEvent(WriteEvent.OnImageSelected(it.toString()))
+        }
+    }
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+        if(success) {
+            onEvent(WriteEvent.DoneTakeAPicture)
         }
     }
     Scaffold(
@@ -151,14 +167,44 @@ fun WriteContent(
                 }
                 Spacer(modifier = Modifier.padding(vertical = 10.dp))
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center ) {
-                    Button(
-                        onClick = {
-                            launcher.launch(
-                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                            )
+                    if(uiState.imageUrl == null && uiState.cameraMode == CameraMode.None) {
+                        Column {
+                            Button(
+                                onClick = {
+                                    launcher.launch(
+                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                    )
+                                }
+                            ) {
+                                Text("写真を追加")
+                            }
+                            Button(
+                                onClick = { onEvent(WriteEvent.TakeAPicture) }
+                            ) {
+                                Text("写真を撮る")
+                            }
                         }
-                    ) {
-                        Text("写真")
+                    } else {
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            AsyncImage(
+                                model = uiState.imageUrl,
+                                contentDescription = "image",
+                                modifier = Modifier.fillMaxWidth().aspectRatio(1f)
+                            )
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopEnd) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "delete",
+                                    modifier = Modifier.padding(10.dp)
+                                        .clickable { onEvent(WriteEvent.DelateImage) }
+                                )
+                            }
+                        }
+                    }
+                }
+                LaunchedEffect(uiState.cameraMode, uiState.uri) {
+                    if(uiState.cameraMode == CameraMode.Take && uiState.uri != null) {
+                        cameraLauncher.launch(uiState.uri)
                     }
                 }
             }
