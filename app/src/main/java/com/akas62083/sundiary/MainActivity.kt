@@ -6,6 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -64,7 +67,20 @@ fun Greeting() {
                 navController = navController,
             )
         }
-        composable<Route.WriteScreen>() { backStackEntry ->
+        composable<Route.WriteScreen>(
+            enterTransition = {
+                slideInHorizontally(
+                    animationSpec = tween(500),
+                    initialOffsetX = { it }
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    animationSpec = tween(400),
+                    targetOffsetX = { it }
+                )
+            }
+        ) { backStackEntry ->
             val viewModel: WriteViewModel = hiltViewModel()
             WriteScreen(
                 viewModel = viewModel,

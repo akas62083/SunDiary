@@ -23,5 +23,7 @@ data class DiaryEntity(
     @ColumnInfo(name = "diary_is_liked")
     val isLiked: Boolean = false,
     @ColumnInfo(name = "diary_wether")
-    val wether: Wether = Wether.None //SelectedはWriteフォルダで定義。
+    val wether: Wether = Wether.None, //SelectedはWriteフォルダで定義。
+    @ColumnInfo(name = "diary_comment")
+    val commentByAi: String? = null
 )

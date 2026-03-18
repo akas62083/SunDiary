@@ -196,7 +196,7 @@ fun WriteContent(
                                     imageVector = Icons.Default.Delete,
                                     contentDescription = "delete",
                                     modifier = Modifier.padding(10.dp)
-                                        .clickable { onEvent(WriteEvent.DelateImage) }
+                                        .clickable { onEvent(WriteEvent.DeleteImage) }
                                 )
                             }
                         }

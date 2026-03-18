@@ -1,12 +1,15 @@
 package com.akas62083.sundiary.repository
 
 import com.akas62083.sundiary.Repository
+import com.akas62083.sundiary.db.diary.DiaryDao
 import com.akas62083.sundiary.db.diary.DiaryEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import javax.inject.Inject
 
-class FakeRepositoryImpl @Inject constructor() : Repository {
+class FakeRepositoryImpl @Inject constructor(
+    private val diaryDao: DiaryDao
+) : Repository {
     val fakeDiaries = listOf(
         DiaryEntity(
             id = 38,
@@ -315,9 +318,10 @@ class FakeRepositoryImpl @Inject constructor() : Repository {
     )
     override fun getAllDiary(): Flow<List<DiaryEntity>> = flowOf(fakeDiaries)
 
-    override suspend fun insertDiary(diary: DiaryEntity) = 0L
+    override suspend fun insertDiary(diary: DiaryEntity) = diaryDao.insertDiary(diary)
     override suspend fun deleteDiary(diary: DiaryEntity) {}
     override suspend fun updateDiary(diary: DiaryEntity) {}
     override fun getDiaryById(id: Long): Flow<DiaryEntity> = flowOf(fakeDiaries.first())
     override fun getDiaryByLiked(): Flow<List<DiaryEntity>> = flowOf()
+    override suspend fun getCommentByAi(sentence: String): String = "テストコメントです。"
 }

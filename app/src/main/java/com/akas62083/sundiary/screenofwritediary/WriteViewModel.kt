@@ -64,7 +64,7 @@ class WriteViewModel @Inject constructor(
             is WriteEvent.OnImageSelected -> { onImageSelected(event.value) }
             is WriteEvent.TakeAPicture -> { takeAPicture() }
             is WriteEvent.DoneTakeAPicture -> { doneTakeAPicture() }
-            is WriteEvent.DelateImage -> { delateImage() }
+            is WriteEvent.DeleteImage -> { deleteImage() }
         }
     }
 
@@ -166,7 +166,8 @@ class WriteViewModel @Inject constructor(
             )
         }
     }
-    fun delateImage() {
+    fun deleteImage() {
+        File(uiState.value.imageUrl).delete()
         _uiState.update { currentState ->
             currentState.copy(
                 imageUrl = null,

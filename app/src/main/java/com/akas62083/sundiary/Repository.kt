@@ -10,4 +10,5 @@ interface Repository {
     fun getAllDiary(): Flow<List<DiaryEntity>>
     fun getDiaryById(id: Long): Flow<DiaryEntity>
     fun getDiaryByLiked(): Flow<List<DiaryEntity>>
+    suspend fun getCommentByAi(sentence: String): String
 }

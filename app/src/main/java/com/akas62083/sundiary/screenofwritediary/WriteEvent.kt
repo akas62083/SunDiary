@@ -8,5 +8,5 @@ sealed interface WriteEvent {
     data class OnImageSelected(val value: String): WriteEvent
     data object TakeAPicture: WriteEvent
     data object DoneTakeAPicture: WriteEvent
-    data object DelateImage: WriteEvent
+    data object DeleteImage: WriteEvent
 }
