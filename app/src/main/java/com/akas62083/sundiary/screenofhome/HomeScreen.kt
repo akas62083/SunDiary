@@ -233,7 +233,16 @@ fun HomeScreen(
                             )
                         }
                         Screens.Search -> {
-                            SearchScreenTab(uiState = uiState)
+                            SearchScreenTab(
+                                uiState = uiState,
+                                clickTitleCheckBox = { viewModel.onEvent(HomeEvent.ClickTitleCheckBox) },
+                                clickContentCheckBox = { viewModel.onEvent(HomeEvent.ClickContentCheckBox) },
+                                clickCommentCheckBox = { viewModel.onEvent(HomeEvent.ClickCommentCheckBox) },
+                                search = { viewModel.onEvent(HomeEvent.Search(it)) },
+                                isLikeClick = { viewModel.isLikeClick(it) },
+                                editClick = { navController.navigate(Route.WriteScreen(it)) },
+                                navigateToDetailScreen = { navController.navigate(Route.DetailScreen(it)) }
+                            )
                         }
                     }
                 }

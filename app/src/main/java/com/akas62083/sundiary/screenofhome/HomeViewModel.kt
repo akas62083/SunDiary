@@ -53,6 +53,10 @@ class HomeViewModel @Inject constructor(
         when(event) {
             is HomeEvent.IsLikeClick -> { isLikeClick(event.id) }
             is HomeEvent.TabChange -> { tabChange(event.screen) }
+            is HomeEvent.ClickTitleCheckBox -> { clickTitleCheckBox() }
+            is HomeEvent.ClickContentCheckBox -> { clickContentCheckBox() }
+            is HomeEvent.ClickCommentCheckBox -> { clickCommentCheckBox() }
+            is HomeEvent.Search -> { search(event.search) }
 
         }
     }
@@ -70,6 +74,37 @@ class HomeViewModel @Inject constructor(
     fun tabChange(screen: Screens) {
         _uiState.update { currentState ->
             currentState.copy(screen = screen)
+        }
+    }
+    fun clickTitleCheckBox() {
+        _uiState.update { currentState ->
+            currentState.copy(checkBoxOfTitle = !currentState.checkBoxOfTitle)
+        }
+    }
+    fun clickContentCheckBox() {
+        _uiState.update { currentState ->
+            currentState.copy(chechBoxOfContent = !currentState.chechBoxOfContent)
+        }
+    }
+    fun clickCommentCheckBox() {
+        _uiState.update { currentState ->
+            currentState.copy(checkBoxOfComment = !currentState.checkBoxOfComment)
+        }
+    }
+    fun search(search: String) {
+        _uiState.update { currentState ->
+            currentState.copy(isSearch = IsSearch.Searching)
+        }
+        viewModelScope.launch {
+            val list = repository.getDiaryBySearch(
+                titleCheck = if(uiState.value.checkBoxOfTitle) 1 else 0,
+                contentCheck = if(uiState.value.chechBoxOfContent) 1 else 0,
+                commentCheck = if(uiState.value.checkBoxOfComment) 1 else 0,
+                word = search
+            ).first()
+            _uiState.update { currentState ->
+                currentState.copy(searchList = list, isSearch = IsSearch.Not)
+            }
         }
     }
 }

@@ -324,4 +324,12 @@ class FakeRepositoryImpl @Inject constructor(
     override fun getDiaryById(id: Long): Flow<DiaryEntity> = flowOf(fakeDiaries.first())
     override fun getDiaryByLiked(): Flow<List<DiaryEntity>> = flowOf()
     override suspend fun getCommentByAi(sentence: String): String = "テストコメントです。"
+    override fun getDiaryBySearch(
+        titleCheck: Int,
+        contentCheck: Int,
+        commentCheck: Int,
+        word: String
+    ): Flow<List<DiaryEntity>> {
+        TODO("Not yet implemented")
+    }
 }

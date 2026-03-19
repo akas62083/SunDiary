@@ -23,4 +23,11 @@ class DiaryRepositoryImpl @Inject constructor(
         val response = api.commentAi(CommentRequest(sentence))
         return response.comment
     }
+
+    override fun getDiaryBySearch(
+        titleCheck: Int,
+        contentCheck: Int,
+        commentCheck: Int,
+        word: String
+    ) = diaryDao.getDiaryBySearch(titleCheck = titleCheck, contentCheck = contentCheck, commentCheck = commentCheck, word = word)
 }

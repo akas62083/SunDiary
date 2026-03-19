@@ -21,4 +21,14 @@ interface DiaryDao {
     fun getDiaryById(id: Long): Flow<DiaryEntity>
     @Query("select * from diary_items where diary_is_liked = 1 order by diary_date desc")
     fun getDiaryByLiked(): Flow<List<DiaryEntity>>
+    @Query("select * from diary_items where " +
+            "(:titleCheck = 1 and diary_title like '%' || :word || '%')" +
+            "or (:contentCheck = 1 and diary_content like '%' || :word || '%')" +
+            "or (:commentCheck = 1 and diary_comment like '%' || :word || '%') order by diary_date desc, diary_id desc")
+    fun getDiaryBySearch(
+        titleCheck: Int,
+        contentCheck: Int,
+        commentCheck: Int,
+        word: String
+    ): Flow<List<DiaryEntity>>
 }
