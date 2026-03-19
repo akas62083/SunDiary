@@ -95,9 +95,9 @@ fun DetailScreen(
                                 change.consume()
                                 scope.launch {
                                     offsetX.snapTo(offsetX.value + dragAmount.x)
-                                    if(offsetX.value < 0) {
+                                    if(slideRL.value == RL.Right && offsetX.value < 0) {
                                         slideRL.value = RL.Left
-                                    } else {
+                                    } else if(slideRL.value == RL.Left && offsetX.value > 0){
                                         slideRL.value = RL.Right
                                     }
                                 }

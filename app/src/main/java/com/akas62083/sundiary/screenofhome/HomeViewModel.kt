@@ -51,9 +51,9 @@ class HomeViewModel @Inject constructor(
 
     fun onEvent(event: HomeEvent) {
         when(event) {
-            is HomeEvent.IsLikeClick -> {
-                isLikeClick(event.id)
-            }
+            is HomeEvent.IsLikeClick -> { isLikeClick(event.id) }
+            is HomeEvent.TabChange -> { tabChange(event.screen) }
+
         }
     }
 
@@ -65,6 +65,11 @@ class HomeViewModel @Inject constructor(
                     isLiked = !diary.isLiked
                 )
             )
+        }
+    }
+    fun tabChange(screen: Screens) {
+        _uiState.update { currentState ->
+            currentState.copy(screen = screen)
         }
     }
 }

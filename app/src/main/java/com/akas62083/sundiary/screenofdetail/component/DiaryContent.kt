@@ -48,7 +48,7 @@ fun DiaryContent(
                 shape = RoundedCornerShape(10.dp)
             )
     ) {
-        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+        Column(modifier = Modifier.padding(10.dp).verticalScroll(rememberScrollState())) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
