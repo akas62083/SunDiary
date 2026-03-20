@@ -132,7 +132,7 @@ fun ItemCard(
                             Text(
                                 modifier = Modifier
                                     .weight(1f).fillMaxSize(),
-                                text = diary.title,
+                                text = "「${diary.title}」",
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 style = MaterialTheme.typography.titleMedium,

@@ -9,6 +9,8 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
@@ -102,7 +104,14 @@ fun Greeting() {
                     sharedTransitionScope = this@SharedTransitionLayout
                 )
             }
-            composable<Route.StarScreen>() { backStackEntry ->
+            composable<Route.StarScreen>(
+                enterTransition = {
+                    fadeIn()
+                },
+                exitTransition = {
+                    fadeOut()
+                }
+            ) { backStackEntry ->
                 val viewModel: StarViewModel = hiltViewModel()
                 StarScreen(
                     viewModel = viewModel,

@@ -1,6 +1,7 @@
 package com.akas62083.sundiary.screenofhome
 
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -22,6 +23,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -34,6 +36,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.DrawerValue
@@ -94,7 +97,19 @@ fun HomeScreen(
         }
         list
     }
+    BackHandler(enabled = drawerState.isOpen) {
+        scope.launch {
+            drawerState.close()
+        }
+    }
+    BackHandler(enabled = uiState.screen == Screens.Search) {
+        viewModel.onEvent(HomeEvent.TabChange(Screens.Home))
+    }
+    BackHandler(enabled = uiState.screen == Screens.Home) {
+
+    }
     ModalNavigationDrawer(
+        gesturesEnabled = uiState.screen == Screens.Home,
         drawerContent = {
             ModalDrawerSheet {
                 if(uiState.screen == Screens.Home) {
@@ -133,63 +148,94 @@ fun HomeScreen(
         },
         drawerState = drawerState
     ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        AnimatedContent(
-                            targetState = uiState.screen,
-                            transitionSpec = {
-                                if(targetState == Screens.Home) {
-                                    slideInHorizontally { -it } with slideOutHorizontally { it }
-                                } else {
-                                    slideInHorizontally { it } with slideOutHorizontally { -it }
-                                }
-                            },
-                            label = "topbar"
-                        ) { state ->
-                            when(state) {
-                                Screens.Home -> {
-                                    Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-                                        Icon(
-                                            imageVector = Icons.Default.Menu,
-                                            contentDescription = null,
-                                            modifier = Modifier.clickable {
-                                                scope.launch {
-                                                    if (drawerState.isClosed) drawerState.open()
-                                                    else drawerState.close()
-                                                }
-                                            },
-                                        )
-                                        Spacer(modifier = Modifier.width(5.dp))
-                                        Spacer(modifier = Modifier.width(5.dp))
-                                        Text(LocalDate.now().toString())
-                                        Spacer(modifier = Modifier.width(5.dp))
-                                        VerticalDivider()
-                                        Spacer(modifier = Modifier.width(5.dp))
-                                        Text("総日記数：" + uiState.diaries.size.toString())
-                                        Spacer(modifier = Modifier.weight(1f))
-                                        Icon(
-                                            imageVector = Icons.Default.Star,
-                                            contentDescription = "star",
-                                            modifier = Modifier.clickable { navController.navigate(Route.StarScreen) },
-                                            tint = Color(0xffa6201a)
-                                        )
-                                        Spacer(modifier = Modifier.width(20.dp))
+        with(animatedVisibilityScope) {
+            with(sharedTransitionScope) {
+                Scaffold(
+                    topBar = {
+                        TopAppBar(
+                            modifier = Modifier
+                                .renderInSharedTransitionScopeOverlay(zIndexInOverlay = 1f)
+                                .animateEnterExit(
+                                    enter = fadeIn() + slideInVertically { it },
+                                    exit = fadeOut() + slideOutVertically { it }
+                                ),
+                            title = {
+                                AnimatedContent(
+                                    targetState = uiState.screen,
+                                    transitionSpec = {
+                                        if (targetState == Screens.Home) {
+                                            slideInHorizontally { -it } with slideOutHorizontally { it }
+                                        } else {
+                                            slideInHorizontally { it } with slideOutHorizontally { -it }
+                                        }
+                                    },
+                                    label = "topbar"
+                                ) { state ->
+                                    when (state) {
+                                        Screens.Home -> {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth()
+                                                    .height(IntrinsicSize.Min)
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Menu,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.clickable {
+                                                        scope.launch {
+                                                            if (drawerState.isClosed) drawerState.open()
+                                                            else drawerState.close()
+                                                        }
+                                                    },
+                                                )
+                                                Spacer(modifier = Modifier.width(5.dp))
+                                                Spacer(modifier = Modifier.width(5.dp))
+                                                Text(LocalDate.now().toString())
+                                                Spacer(modifier = Modifier.width(5.dp))
+                                                VerticalDivider()
+                                                Spacer(modifier = Modifier.width(5.dp))
+                                                Text("総日記数：" + uiState.diaries.size.toString())
+                                                Spacer(modifier = Modifier.weight(1f))
+                                                Icon(
+                                                    imageVector = Icons.Default.Star,
+                                                    contentDescription = "star",
+                                                    modifier = Modifier.clickable(
+                                                        interactionSource = null,
+                                                        indication = null
+                                                    ) {
+                                                        navController.navigate(
+                                                            Route.StarScreen
+                                                        )
+                                                    }
+                                                        .fillMaxHeight(),
+                                                    tint = Color(0xffa6201a)
+                                                )
+                                                Spacer(modifier = Modifier.width(10.dp))
+                                                Icon(
+                                                    imageVector = Icons.Default.Settings,
+                                                    contentDescription = "settings",
+                                                    modifier = Modifier.clickable(
+                                                        interactionSource = null,
+                                                        indication = null
+                                                    ) {
+
+                                                    }
+                                                        .fillMaxHeight(),
+                                                    tint = Color(0xffa6201a)
+                                                )
+                                                Spacer(modifier = Modifier.width(20.dp))
+                                            }
+                                        }
+
+                                        Screens.Search -> {
+                                            Text("検索")
+                                        }
                                     }
                                 }
-                                Screens.Search -> {
-                                    Text("検索")
-                                }
-                            }
-                        }
 
-                    }
-                )
-            },
-            bottomBar = {
-                with(animatedVisibilityScope) {
-                    with(sharedTransitionScope) {
+                            }
+                        )
+                    },
+                    bottomBar = {
                         BottomAppBar(
                             modifier = Modifier
                                 .renderInSharedTransitionScopeOverlay(zIndexInOverlay = 1f)
@@ -208,7 +254,10 @@ fun HomeScreen(
                                     modifier = Modifier.padding(15.dp)
                                         .aspectRatio(1f)
                                         .fillMaxSize()
-                                        .clickable { viewModel.onEvent(HomeEvent.TabChange(Screens.Home)) },
+                                        .clickable(
+                                            interactionSource = null,
+                                            indication = null
+                                        ) { viewModel.onEvent(HomeEvent.TabChange(Screens.Home)) },
                                     imageVector = Icons.Default.Home,
                                     contentDescription = "home",
                                     tint = if (uiState.screen == Screens.Home) Color(0xffa6201a) else Color(
@@ -219,7 +268,10 @@ fun HomeScreen(
                                     modifier = Modifier.padding(15.dp)
                                         .aspectRatio(1f)
                                         .fillMaxSize()
-                                        .clickable { viewModel.onEvent(HomeEvent.TabChange(Screens.Search)) },
+                                        .clickable(
+                                            interactionSource = null,
+                                            indication = null
+                                        ) { viewModel.onEvent(HomeEvent.TabChange(Screens.Search)) },
                                     imageVector = Icons.Default.Search,
                                     contentDescription = "search",
                                     tint = if (uiState.screen == Screens.Search) Color(0xffa6201a) else Color(
@@ -229,55 +281,74 @@ fun HomeScreen(
                             }
                         }
                     }
-                }
-            }
-        ) { innerPadding ->
-            Box(
-                modifier = Modifier.padding(innerPadding)
-            ) {
-                AnimatedContent(
-                    targetState = uiState.screen,
-                    transitionSpec = {
-                        if(targetState == Screens.Home) {
-                            slideInHorizontally { -it } with slideOutHorizontally { it }
-                        } else {
-                            slideInHorizontally { it } with slideOutHorizontally { -it }
-                        }
-                    },
-                    label = "screen"
-                ) { state ->
-                    when(state) {
-                        Screens.Home -> {
-                            HomeScreenTab(
-                                uiState = uiState,
-                                navigateToWriteScreen = { navController.navigate(Route.WriteScreen(null)) },
-                                modifier = Modifier,
-                                listState = listState,
-                                isLikeClick = { viewModel.isLikeClick(it) },
-                                editClick = { navController.navigate(Route.WriteScreen(it)) },
-                                navigateToDetailScreen = { navController.navigate(Route.DetailScreen(it)) },
-                                animatedVisibilityScope = animatedVisibilityScope,
-                                sharedTransitionScope = sharedTransitionScope
-                            )
-                        }
-                        Screens.Search -> {
-                            SearchScreenTab(
-                                uiState = uiState,
-                                clickTitleCheckBox = { viewModel.onEvent(HomeEvent.ClickTitleCheckBox) },
-                                clickContentCheckBox = { viewModel.onEvent(HomeEvent.ClickContentCheckBox) },
-                                clickCommentCheckBox = { viewModel.onEvent(HomeEvent.ClickCommentCheckBox) },
-                                search = { word, from, to ->
-                                    viewModel.onEvent(HomeEvent.Search(word, from, to))
-                                         },
-                                isLikeClick = { viewModel.isLikeClick(it) },
-                                editClick = { navController.navigate(Route.WriteScreen(it)) },
-                                navigateToDetailScreen = { navController.navigate(Route.DetailScreen(it)) },
-                                clickIsLikeCheckBox = { viewModel.onEvent(HomeEvent.ClickIsLikeCheckBox) },
-                                clickNotEditCheckBox = { viewModel.onEvent(HomeEvent.ClickNotEditCheckBox) },
-                                clickEditCheckBox = { viewModel.onEvent(HomeEvent.ClickEditCheckBox) },
-                                animatedVisibilityScope = animatedVisibilityScope,
-                                sharedTransitionScope = sharedTransitionScope
-                            )
+                ) { innerPadding ->
+                    Box(
+                        modifier = Modifier.padding(innerPadding)
+                    ) {
+                        AnimatedContent(
+                            targetState = uiState.screen,
+                            transitionSpec = {
+                                if (targetState == Screens.Home) {
+                                    slideInHorizontally { -it } with slideOutHorizontally { it }
+                                } else {
+                                    slideInHorizontally { it } with slideOutHorizontally { -it }
+                                }
+                            },
+                            label = "screen"
+                        ) { state ->
+                            when (state) {
+                                Screens.Home -> {
+                                    HomeScreenTab(
+                                        uiState = uiState,
+                                        navigateToWriteScreen = {
+                                            navController.navigate(
+                                                Route.WriteScreen(
+                                                    null
+                                                )
+                                            )
+                                        },
+                                        modifier = Modifier,
+                                        listState = listState,
+                                        isLikeClick = { viewModel.isLikeClick(it) },
+                                        editClick = { navController.navigate(Route.WriteScreen(it)) },
+                                        navigateToDetailScreen = {
+                                            navController.navigate(
+                                                Route.DetailScreen(
+                                                    it
+                                                )
+                                            )
+                                        },
+                                        animatedVisibilityScope = animatedVisibilityScope,
+                                        sharedTransitionScope = sharedTransitionScope
+                                    )
+                                }
+
+                                Screens.Search -> {
+                                    SearchScreenTab(
+                                        uiState = uiState,
+                                        clickTitleCheckBox = { viewModel.onEvent(HomeEvent.ClickTitleCheckBox) },
+                                        clickContentCheckBox = { viewModel.onEvent(HomeEvent.ClickContentCheckBox) },
+                                        clickCommentCheckBox = { viewModel.onEvent(HomeEvent.ClickCommentCheckBox) },
+                                        search = { word, from, to ->
+                                            viewModel.onEvent(HomeEvent.Search(word, from, to))
+                                        },
+                                        isLikeClick = { viewModel.isLikeClick(it) },
+                                        editClick = { navController.navigate(Route.WriteScreen(it)) },
+                                        navigateToDetailScreen = {
+                                            navController.navigate(
+                                                Route.DetailScreen(
+                                                    it
+                                                )
+                                            )
+                                        },
+                                        clickIsLikeCheckBox = { viewModel.onEvent(HomeEvent.ClickIsLikeCheckBox) },
+                                        clickNotEditCheckBox = { viewModel.onEvent(HomeEvent.ClickNotEditCheckBox) },
+                                        clickEditCheckBox = { viewModel.onEvent(HomeEvent.ClickEditCheckBox) },
+                                        animatedVisibilityScope = animatedVisibilityScope,
+                                        sharedTransitionScope = sharedTransitionScope
+                                    )
+                                }
+                            }
                         }
                     }
                 }

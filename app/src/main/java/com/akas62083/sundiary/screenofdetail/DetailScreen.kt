@@ -75,7 +75,10 @@ fun DetailScreen(
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
                                 contentDescription = "back",
-                                modifier = Modifier.clickable { navController.popBackStack() }
+                                modifier = Modifier.clickable(
+                                    interactionSource = null,
+                                    indication = null
+                                ) { navController.popBackStack() }
                             )
                             Spacer(modifier = Modifier.width(15.dp))
                             Text(LocalDate.now().toString())

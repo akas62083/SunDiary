@@ -35,6 +35,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.akas62083.sundiary.screenofhome.HomeUiState
@@ -87,7 +88,11 @@ fun SearchScreenTab(
                     Icon(
                         Icons.Sharp.ArrowForward,
                         contentDescription = null,
-                        modifier = Modifier.clickable { search(serchwords, dateFrom, dateTo) }
+                        modifier = Modifier.clickable(
+                            interactionSource = null,
+                            indication = null
+                        ) { search(serchwords, dateFrom, dateTo) },
+                        tint = Color(0xffa6201a)
                     )
                 },
             )
