@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -56,8 +57,10 @@ class HomeViewModel @Inject constructor(
             is HomeEvent.ClickTitleCheckBox -> { clickTitleCheckBox() }
             is HomeEvent.ClickContentCheckBox -> { clickContentCheckBox() }
             is HomeEvent.ClickCommentCheckBox -> { clickCommentCheckBox() }
-            is HomeEvent.Search -> { search(event.search) }
-
+            is HomeEvent.Search -> { search(event.search, event.from, event.to) }
+            is HomeEvent.ClickIsLikeCheckBox -> { clickIsLikeCheckBox() }
+            is HomeEvent.ClickNotEditCheckBox -> { clickNotEditCheckBox() }
+            is HomeEvent.ClickEditCheckBox -> { clickEditCheckBox() }
         }
     }
 
@@ -91,20 +94,56 @@ class HomeViewModel @Inject constructor(
             currentState.copy(checkBoxOfComment = !currentState.checkBoxOfComment)
         }
     }
-    fun search(search: String) {
+    fun search(search: String, fromDate: String, toDate: String) {
+        var fromDate2 = fromDate
+        var toDate2 = toDate
+        if(fromDate2 == "") {
+            fromDate2 = "1038/01/19"
+        }
+        if(toDate2 == "") {
+            toDate2 = "2038/01/19"
+        }
         _uiState.update { currentState ->
             currentState.copy(isSearch = IsSearch.Searching)
         }
         viewModelScope.launch {
-            val list = repository.getDiaryBySearch(
+            repository.getDiaryBySearch(
                 titleCheck = if(uiState.value.checkBoxOfTitle) 1 else 0,
                 contentCheck = if(uiState.value.chechBoxOfContent) 1 else 0,
                 commentCheck = if(uiState.value.checkBoxOfComment) 1 else 0,
+                isLikeClick = if(uiState.value.checkBoxOfIsLiked) 1 else 0,
+                notEditCheck = if(uiState.value.checkBoxOfNotEdit) 1 else 0,
+                editCheck = if(uiState.value.checkBoxOfEdit) 1 else 0,
                 word = search
-            ).first()
-            _uiState.update { currentState ->
-                currentState.copy(searchList = list, isSearch = IsSearch.Not)
+            ).map { date ->
+                val fromInt = fromDate2.replace("/", "").toInt()
+                val toInt = toDate2.replace("/", "").toInt()
+                date.filter {
+                    it.date in fromInt..toInt
+                }
+            }
+            .collect {
+                _uiState.update { currentState ->
+                    currentState.copy(searchList = it, isSearch = IsSearch.Not)
+                }
             }
         }
     }
+    fun clickIsLikeCheckBox() {
+        _uiState.update { currentState ->
+            currentState.copy(checkBoxOfIsLiked = !currentState.checkBoxOfIsLiked)
+        }
+    }
+    fun clickNotEditCheckBox() {
+        _uiState.update { currentState ->
+            currentState.copy(checkBoxOfNotEdit = !currentState.checkBoxOfNotEdit)
+        }
+    }
+    fun clickEditCheckBox() {
+        _uiState.update { currnetState ->
+            currnetState.copy(checkBoxOfEdit = !currnetState.checkBoxOfEdit)
+        }
+    }
 }
+
+// 220 * 110 * 70

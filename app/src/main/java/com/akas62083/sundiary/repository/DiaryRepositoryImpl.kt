@@ -28,6 +28,17 @@ class DiaryRepositoryImpl @Inject constructor(
         titleCheck: Int,
         contentCheck: Int,
         commentCheck: Int,
+        isLikeClick: Int,
+        notEditCheck: Int,
+        editCheck: Int,
         word: String
-    ) = diaryDao.getDiaryBySearch(titleCheck = titleCheck, contentCheck = contentCheck, commentCheck = commentCheck, word = word)
+    ) = diaryDao.getDiaryBySearch(
+        titleCheck = titleCheck,
+        contentCheck = contentCheck,
+        commentCheck = commentCheck,
+        isLikeCheck = isLikeClick,
+        notEditCheck = notEditCheck,
+        editCheck = editCheck,
+        word = word
+    )
 }

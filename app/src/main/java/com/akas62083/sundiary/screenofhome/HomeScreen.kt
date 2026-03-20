@@ -238,10 +238,15 @@ fun HomeScreen(
                                 clickTitleCheckBox = { viewModel.onEvent(HomeEvent.ClickTitleCheckBox) },
                                 clickContentCheckBox = { viewModel.onEvent(HomeEvent.ClickContentCheckBox) },
                                 clickCommentCheckBox = { viewModel.onEvent(HomeEvent.ClickCommentCheckBox) },
-                                search = { viewModel.onEvent(HomeEvent.Search(it)) },
+                                search = { word, from, to ->
+                                    viewModel.onEvent(HomeEvent.Search(word, from, to))
+                                         },
                                 isLikeClick = { viewModel.isLikeClick(it) },
                                 editClick = { navController.navigate(Route.WriteScreen(it)) },
-                                navigateToDetailScreen = { navController.navigate(Route.DetailScreen(it)) }
+                                navigateToDetailScreen = { navController.navigate(Route.DetailScreen(it)) },
+                                clickIsLikeCheckBox = { viewModel.onEvent(HomeEvent.ClickIsLikeCheckBox) },
+                                clickNotEditCheckBox = { viewModel.onEvent(HomeEvent.ClickNotEditCheckBox) },
+                                clickEditCheckBox = { viewModel.onEvent(HomeEvent.ClickEditCheckBox) },
                             )
                         }
                     }

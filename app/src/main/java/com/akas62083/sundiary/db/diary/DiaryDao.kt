@@ -22,13 +22,20 @@ interface DiaryDao {
     @Query("select * from diary_items where diary_is_liked = 1 order by diary_date desc")
     fun getDiaryByLiked(): Flow<List<DiaryEntity>>
     @Query("select * from diary_items where " +
-            "(:titleCheck = 1 and diary_title like '%' || :word || '%')" +
+            "((:titleCheck = 1 and diary_title like '%' || :word || '%')" +
             "or (:contentCheck = 1 and diary_content like '%' || :word || '%')" +
-            "or (:commentCheck = 1 and diary_comment like '%' || :word || '%') order by diary_date desc, diary_id desc")
+            "or (:commentCheck = 1 and diary_comment like '%' || :word || '%'))" +
+            "and (:isLikeCheck = 0 or (:isLikeCheck = 1 and diary_is_liked = 1))" +
+            "and ((:notEditCheck = 1 and diary_edit = 0)" +
+            "or (:editCheck = 1 and diary_edit = 1))" +
+            " order by diary_date desc, diary_id desc")
     fun getDiaryBySearch(
         titleCheck: Int,
         contentCheck: Int,
         commentCheck: Int,
+        isLikeCheck: Int,
+        notEditCheck: Int,
+        editCheck: Int,
         word: String
     ): Flow<List<DiaryEntity>>
 }

@@ -6,5 +6,8 @@ sealed interface HomeEvent {
     data object ClickTitleCheckBox: HomeEvent
     data object ClickContentCheckBox: HomeEvent
     data object ClickCommentCheckBox: HomeEvent
-    data class Search(val search: String): HomeEvent
+    data object ClickIsLikeCheckBox: HomeEvent
+    data object ClickNotEditCheckBox: HomeEvent
+    data object ClickEditCheckBox: HomeEvent
+    data class Search(val search: String, val from: String, val to: String): HomeEvent
 }

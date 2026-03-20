@@ -14,6 +14,7 @@ data class HomeUiState (
     val checkBoxOfDate: Boolean = false, // true だったら日付検索モードに入る(何月何日から何月何日までという形で。)。検索の言葉と合わせる。
     val checkBoxOfIsLiked: Boolean = false,// trueだったらLikeしてるかどうかをCheckできる。検索の言葉と合わせて検索する。
     val checkBoxOfEdit: Boolean = false, //
+    val checkBoxOfNotEdit: Boolean = false,
 
     val isSearch: IsSearch = IsSearch.Not,
     val searchList: List<DiaryEntity> = emptyList()

@@ -15,6 +15,9 @@ interface Repository {
         titleCheck: Int,
         contentCheck: Int,
         commentCheck: Int,
+        isLikeClick: Int,
+        notEditCheck: Int,
+        editCheck: Int,
         word: String
     ): Flow<List<DiaryEntity>>
 }
