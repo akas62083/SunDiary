@@ -1,5 +1,8 @@
 package com.akas62083.sundiary.screenofhome.screen
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.akas62083.sundiary.screenofhome.HomeUiState
 import com.akas62083.sundiary.screenofhome.composable.ItemCard
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun HomeScreenTab(
     uiState: HomeUiState,
@@ -38,6 +42,8 @@ fun HomeScreenTab(
     isLikeClick: (Long) -> Unit,
     editClick: (Long) -> Unit,
     navigateToDetailScreen: (Long) -> Unit,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    sharedTransitionScope: SharedTransitionScope
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 10.dp)
@@ -106,7 +112,9 @@ fun HomeScreenTab(
                     },
                     diaryClick = { id ->
                         navigateToDetailScreen(id)
-                    }
+                    },
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    sharedTransitionScope = sharedTransitionScope
                 )
             }
         }

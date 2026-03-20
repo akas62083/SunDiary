@@ -6,6 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -50,56 +52,63 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Greeting() {
     val navController = rememberNavController()
     val currentBackStack by navController.currentBackStackEntryAsState()
-    NavHost(
-        navController = navController,
-        startDestination = Route.HomeScreen,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        composable<Route.HomeScreen>() { backStackEntry ->
-            val viewModel: HomeViewModel = hiltViewModel()
-            HomeScreen(
-                viewModel = viewModel,
-                navController = navController,
-            )
-        }
-        composable<Route.WriteScreen>(
-            enterTransition = {
-                slideInHorizontally(
-                    animationSpec = tween(500),
-                    initialOffsetX = { it }
-                )
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    animationSpec = tween(400),
-                    targetOffsetX = { it }
+    SharedTransitionLayout {
+        NavHost(
+            navController = navController,
+            startDestination = Route.HomeScreen,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            composable<Route.HomeScreen>() { backStackEntry ->
+                val viewModel: HomeViewModel = hiltViewModel()
+                HomeScreen(
+                    viewModel = viewModel,
+                    navController = navController,
+                    animatedVisibilityScope = this,
+                    sharedTransitionScope = this@SharedTransitionLayout
                 )
             }
-        ) { backStackEntry ->
-            val viewModel: WriteViewModel = hiltViewModel()
-            WriteScreen(
-                viewModel = viewModel,
-                navController = navController,
-            )
-        }
-        composable<Route.DetailScreen>() { backStackEntry ->
-            val viewModel: DetailViewModel = hiltViewModel()
-            DetailScreen(
-                viewModel = viewModel,
-                navController = navController
-            )
-        }
-        composable<Route.StarScreen>() { backStackEntry ->
-            val viewModel: StarViewModel = hiltViewModel()
-            StarScreen(
-                viewModel = viewModel,
-                navController = navController
-            )
+            composable<Route.WriteScreen>(
+                enterTransition = {
+                    slideInHorizontally(
+                        animationSpec = tween(500),
+                        initialOffsetX = { it }
+                    )
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        animationSpec = tween(400),
+                        targetOffsetX = { it }
+                    )
+                }
+            ) { backStackEntry ->
+                val viewModel: WriteViewModel = hiltViewModel()
+                WriteScreen(
+                    viewModel = viewModel,
+                    navController = navController,
+                )
+            }
+            composable<Route.DetailScreen>() { backStackEntry ->
+                val viewModel: DetailViewModel = hiltViewModel()
+                DetailScreen(
+                    viewModel = viewModel,
+                    navController = navController,
+                    animatedVisibilityScope = this,
+                    sharedTransitionScope = this@SharedTransitionLayout
+                )
+            }
+            composable<Route.StarScreen>() { backStackEntry ->
+                val viewModel: StarViewModel = hiltViewModel()
+                StarScreen(
+                    viewModel = viewModel,
+                    navController = navController
+                )
+            }
         }
     }
 }

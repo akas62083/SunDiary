@@ -3,9 +3,16 @@ package com.akas62083.sundiary.screenofhome
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.with
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -62,11 +69,15 @@ data class IndexClass(
     val date: Int
 )
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class,
+    ExperimentalSharedTransitionApi::class
+)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
-    navController: NavController
+    navController: NavController,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    sharedTransitionScope: SharedTransitionScope
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -177,31 +188,46 @@ fun HomeScreen(
                 )
             },
             bottomBar = {
-                BottomAppBar(
-                    modifier = Modifier.height(100.dp).height(IntrinsicSize.Min)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Icon(
-                            modifier = Modifier.padding(15.dp)
-                                .aspectRatio(1f)
-                                .fillMaxSize()
-                                .clickable { viewModel.onEvent(HomeEvent.TabChange(Screens.Home)) },
-                            imageVector = Icons.Default.Home,
-                            contentDescription = "home",
-                            tint = if(uiState.screen == Screens.Home ) Color(0xffa6201a) else Color(0xff000000)
-                        )
-                        Icon(
-                            modifier = Modifier.padding(15.dp)
-                                .aspectRatio(1f)
-                                .fillMaxSize()
-                                .clickable { viewModel.onEvent(HomeEvent.TabChange(Screens.Search)) },
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "search",
-                            tint = if(uiState.screen == Screens.Search) Color(0xffa6201a) else Color(0xff000000)
-                        )
+                with(animatedVisibilityScope) {
+                    with(sharedTransitionScope) {
+                        BottomAppBar(
+                            modifier = Modifier
+                                .renderInSharedTransitionScopeOverlay(zIndexInOverlay = 1f)
+                                .animateEnterExit(
+                                    enter = fadeIn() + slideInVertically { it },
+                                    exit = fadeOut() + slideOutVertically { it }
+                                )
+                                .height(100.dp)
+                                .height(IntrinsicSize.Min)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                Icon(
+                                    modifier = Modifier.padding(15.dp)
+                                        .aspectRatio(1f)
+                                        .fillMaxSize()
+                                        .clickable { viewModel.onEvent(HomeEvent.TabChange(Screens.Home)) },
+                                    imageVector = Icons.Default.Home,
+                                    contentDescription = "home",
+                                    tint = if (uiState.screen == Screens.Home) Color(0xffa6201a) else Color(
+                                        0xff000000
+                                    )
+                                )
+                                Icon(
+                                    modifier = Modifier.padding(15.dp)
+                                        .aspectRatio(1f)
+                                        .fillMaxSize()
+                                        .clickable { viewModel.onEvent(HomeEvent.TabChange(Screens.Search)) },
+                                    imageVector = Icons.Default.Search,
+                                    contentDescription = "search",
+                                    tint = if (uiState.screen == Screens.Search) Color(0xffa6201a) else Color(
+                                        0xff000000
+                                    )
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -229,7 +255,9 @@ fun HomeScreen(
                                 listState = listState,
                                 isLikeClick = { viewModel.isLikeClick(it) },
                                 editClick = { navController.navigate(Route.WriteScreen(it)) },
-                                navigateToDetailScreen = { navController.navigate(Route.DetailScreen(it)) }
+                                navigateToDetailScreen = { navController.navigate(Route.DetailScreen(it)) },
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                sharedTransitionScope = sharedTransitionScope
                             )
                         }
                         Screens.Search -> {
@@ -247,6 +275,8 @@ fun HomeScreen(
                                 clickIsLikeCheckBox = { viewModel.onEvent(HomeEvent.ClickIsLikeCheckBox) },
                                 clickNotEditCheckBox = { viewModel.onEvent(HomeEvent.ClickNotEditCheckBox) },
                                 clickEditCheckBox = { viewModel.onEvent(HomeEvent.ClickEditCheckBox) },
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                sharedTransitionScope = sharedTransitionScope
                             )
                         }
                     }

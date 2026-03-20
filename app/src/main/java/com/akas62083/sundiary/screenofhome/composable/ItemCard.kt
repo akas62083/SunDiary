@@ -1,5 +1,9 @@
 package com.akas62083.sundiary.screenofhome.composable
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,133 +37,150 @@ import com.akas62083.sundiary.screenofhome.HomeUiState
 import com.akas62083.sundiary.screenofwritediary.Wether
 import java.time.LocalDate
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ItemCard(
     diary: DiaryEntity,
     uiState: HomeUiState,
     isLikeClick: (Long) -> Unit,
     editClick: (Long) -> Unit,
-    diaryClick: (Long) -> Unit
+    diaryClick: (Long) -> Unit,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    sharedTransitionScope: SharedTransitionScope
 ) {
-    Column {
-        Card(
-            modifier = Modifier.fillMaxWidth()
-                .padding(vertical = 10.dp)
-                .clickable(){
-                    diaryClick(diary.id)
-                },
-            elevation = CardDefaults.cardElevation(defaultElevation = 7.dp)
-        ) {
-            val year = diary.date / 10000
-            val month = diary.date % 10000 / 100
-            val day = diary.date % 100
-            Row(
-                modifier = Modifier.padding(10.dp).fillMaxWidth().height(IntrinsicSize.Min),
-                verticalAlignment = Alignment.CenterVertically,
+    with(sharedTransitionScope) {
+        Column {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp)
+                    .clickable() {
+                        diaryClick(diary.id)
+                    }.sharedBounds(
+                        rememberSharedContentState(key = "diary-${diary.id}"),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ ->
+                            spring(
+                                dampingRatio = 0.8f,
+                                stiffness = 380f
+                            )
+                        }
+                    ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 7.dp)
             ) {
+                val year = diary.date / 10000
+                val month = diary.date % 10000 / 100
+                val day = diary.date % 100
                 Row(
-                    modifier = Modifier.weight(1.5f).fillMaxSize(),
+                    modifier = Modifier.padding(10.dp).fillMaxWidth().height(IntrinsicSize.Min),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = year.toString(),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = month.toString(),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = day.toString(),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                    Row(
+                        modifier = Modifier.weight(1.5f).fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = year.toString(),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = month.toString(),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = day.toString(),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = "年",
+                            )
+                            Text(
+                                text = "月",
+                            )
+                            Text(
+                                text = "日",
+                            )
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.weight(1.5f).fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        Icon(
+                            modifier = Modifier.padding(10.dp).fillMaxHeight().aspectRatio(1f),
+                            painter = painterResource(
+                                when (diary.wether) {
+                                    Wether.Sunny -> R.drawable.sunny
+                                    Wether.Cloudy -> R.drawable.sun_and_cloud
+                                    else -> R.drawable.cloudy
+                                }
+                            ),
+                            contentDescription = "tenki",
+                            tint = Color(0xffa6201a)
                         )
                     }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = "年",
-                        )
-                        Text(
-                            text = "月",
-                        )
-                        Text(
-                            text = "日",
-                        )
+                    Row(modifier = Modifier.weight(5f).fillMaxSize()) {
+                        Column {
+                            Text(
+                                modifier = Modifier
+                                    .weight(1f).fillMaxSize(),
+                                text = diary.title,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                            )
+                            Text(
+                                modifier = Modifier
+                                    .weight(2f),
+                                text = diary.content,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
-                }
-                Row(
-                    modifier = Modifier.weight(1.5f).fillMaxSize(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                    Icon(
-                        modifier = Modifier.padding(10.dp).fillMaxHeight().aspectRatio(1f),
-                        painter = painterResource(
-                            when(diary.wether) {
-                                Wether.Sunny -> R.drawable.sunny
-                                Wether.Cloudy -> R.drawable.sun_and_cloud
-                                else -> R.drawable.cloudy
-                            }
-                        ),
-                        contentDescription = "tenki",
-                        tint = Color(0xffa6201a)
-                    )
-                }
-                Row(modifier = Modifier.weight(5f).fillMaxSize()) {
-                    Column {
+                    Column(modifier = Modifier.weight(2f).fillMaxSize()) {
                         Text(
-                            modifier = Modifier.weight(1f).fillMaxSize(),
-                            text = "「${diary.title}」",
+                            modifier = Modifier.weight(1f),
+                            text = "id: ${(diary.id)}",
                             maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            modifier = Modifier.weight(2f),
-                            text = diary.content,
-                            maxLines = 2,
                             overflow = TextOverflow.Ellipsis
                         )
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            text = if (diary.edit) "編集済" else if (diary.date == LocalDate.now()
+                                    .toString().replace("-", "").toInt()
+                            ) "編集可" else "未編集",
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Icon(
+                            modifier = Modifier.weight(1f)
+                                .clickable(
+                                    interactionSource = null,
+                                    indication = null
+                                ) { isLikeClick(diary.id) },
+                            imageVector = Icons.Default.Star,
+                            tint = if (diary.isLiked) Color.Black else Color.LightGray,
+                            contentDescription = "liked",
+                        )
                     }
                 }
-                Column(modifier = Modifier.weight(2f).fillMaxSize()) {
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = "id: ${(diary.id)}",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = if (diary.edit) "編集済" else if (diary.date == LocalDate.now()
-                                .toString().replace("-", "").toInt()
-                        ) "編集可" else "未編集",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Icon(
-                        modifier = Modifier.weight(1f)
-                            .clickable(
-                                interactionSource = null,
-                                indication = null
-                            ) { isLikeClick(diary.id) },
-                        imageVector = Icons.Default.Star,
-                        tint = if(diary.isLiked) Color.Black else Color.LightGray,
-                        contentDescription = "liked",
-                    )
-                }
-            }
 
-        }
-        if(diary.date == LocalDate.now().toString().replace("-", "").toInt() && !diary.edit) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                TextButton(onClick = { editClick(diary.id) }) {
-                    Text("編集する")
+            }
+            if (diary.date == LocalDate.now().toString().replace("-", "").toInt() && !diary.edit) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                    TextButton(onClick = { editClick(diary.id) }) {
+                        Text("編集する")
+                    }
                 }
             }
         }
